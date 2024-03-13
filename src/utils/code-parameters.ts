@@ -1,4 +1,4 @@
-import { AlertPayload, EventBus, InterpolateFunction, PanelData } from '@grafana/data';
+import { AlertPayload, DataQueryResponse, EventBus, InterpolateFunction, PanelData } from '@grafana/data';
 import { BackendSrv, FetchResponse, LocationService, TemplateSrv, toDataQueryResponse } from '@grafana/runtime';
 import { CodeEditorSuggestionItemKind } from '@grafana/ui';
 import { CodeParameterItem, CodeParametersBuilder } from '@volkovlabs/components';
@@ -37,7 +37,9 @@ export const requestCodeParameters = new CodeParametersBuilder({
         ),
         enableSubmit: new CodeParameterItem<() => void>('Enable submit button.', CodeEditorSuggestionItemKind.Method),
         disableSubmit: new CodeParameterItem<() => void>('Disable submit button.', CodeEditorSuggestionItemKind.Method),
-        response: new CodeParameterItem<FetchResponse | Response | null | undefined>('Response object.'),
+        response: new CodeParameterItem<FetchResponse | Response | DataQueryResponse | null | undefined>(
+          'Response object.'
+        ),
       },
     },
     grafana: {

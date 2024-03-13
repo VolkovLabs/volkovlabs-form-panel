@@ -81,6 +81,13 @@ export interface RequestOptions {
    * @type {string}
    */
   getPayload: string;
+
+  /**
+   * Payload
+   *
+   * @type {unknown}
+   */
+  payload: unknown;
 }
 
 /**
@@ -114,6 +121,13 @@ export interface ResetAction {
    * @type {string}
    */
   getPayload: string;
+
+  /**
+   * Payload
+   *
+   * @type {unknown}
+   */
+  payload: unknown;
 
   /**
    * Ask for confirmation

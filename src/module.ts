@@ -4,6 +4,7 @@ import { getAvailableIcons } from '@grafana/ui';
 import {
   CustomCodeEditor,
   DatasourceEditor,
+  DatasourcePayloadEditor,
   FormElementsEditor,
   FormPanel,
   HeaderParametersEditor,
@@ -252,20 +253,34 @@ export const plugin = new PanelPlugin<PanelOptions>(FormPanel)
     /**
      * Initial Payload For Data Source
      */
-    builder.addCustomEditor({
-      id: 'initial.getPayload',
-      path: 'initial.getPayload',
-      name: 'Create Payload',
-      description: 'Custom code to create payload for the initial data source request.',
-      editor: CustomCodeEditor,
-      category: ['Initial Request Payload'],
-      settings: {
-        type: CodeEditorType.GET_PAYLOAD,
-        variablesSuggestions: true,
-      },
-      defaultValue: INITIAL_PAYLOAD_DEFAULT,
-      showIf: (config) => config.initial.method === RequestMethod.DATASOURCE && !!config.initial.datasource,
-    });
+    builder
+      .addCustomEditor({
+        id: 'initial.getPayload',
+        path: 'initial.getPayload',
+        name: 'Create Payload',
+        description: 'Custom code to create payload for the initial data source request.',
+        editor: CustomCodeEditor,
+        category: ['Initial Request Payload'],
+        settings: {
+          type: CodeEditorType.GET_PAYLOAD,
+          variablesSuggestions: true,
+        },
+        defaultValue: INITIAL_PAYLOAD_DEFAULT,
+        showIf: (config) => config.initial.method === RequestMethod.DATASOURCE && !!config.initial.datasource,
+      })
+      .addCustomEditor({
+        id: 'initial.payload',
+        path: 'initial.payload',
+        name: 'Query Editor',
+        description: 'Configure query for the selected data source. ${payload} variable contains all passed values.',
+        editor: DatasourcePayloadEditor,
+        category: ['Initial Request Payload'],
+        settings: {
+          datasourceKey: 'initial.datasource',
+        },
+        defaultValue: {},
+        showIf: (config) => config.initial.method === RequestMethod.DATASOURCE && !!config.initial.datasource,
+      });
 
     /**
      * Highlight
@@ -410,6 +425,22 @@ export const plugin = new PanelPlugin<PanelOptions>(FormPanel)
         },
         defaultValue: UPDATE_PAYLOAD_DEFAULT,
         showIf: (config) => isRequestConfigured(config.update) && config.update.payloadMode === PayloadMode.CUSTOM,
+      })
+      .addCustomEditor({
+        id: 'update.payload',
+        path: 'update.payload',
+        name: 'Query Editor',
+        description: 'Configure query for the selected data source. ${payload} variable contains all passed values.',
+        editor: DatasourcePayloadEditor,
+        category: ['Update Request Payload'],
+        settings: {
+          datasourceKey: 'update.datasource',
+        },
+        defaultValue: UPDATE_PAYLOAD_DEFAULT,
+        showIf: (config) =>
+          isRequestConfigured(config.update) &&
+          config.update.method === RequestMethod.DATASOURCE &&
+          !!config.update.datasource,
       });
 
     builder
@@ -697,23 +728,40 @@ export const plugin = new PanelPlugin<PanelOptions>(FormPanel)
     /**
      * Reset Request Payload
      */
-    builder.addCustomEditor({
-      id: 'resetAction.getPayload',
-      path: 'resetAction.getPayload',
-      name: 'Create Payload',
-      description: 'Custom code to create payload for the reset data source request.',
-      editor: CustomCodeEditor,
-      category: ['Reset Request Payload'],
-      settings: {
-        type: CodeEditorType.GET_PAYLOAD,
-        variablesSuggestions: true,
-      },
-      defaultValue: INITIAL_PAYLOAD_DEFAULT,
-      showIf: (config) =>
-        config.reset.variant !== ButtonVariant.HIDDEN &&
-        config.resetAction.mode === ResetActionMode.DATASOURCE &&
-        !!config.resetAction.datasource,
-    });
+    builder
+      .addCustomEditor({
+        id: 'resetAction.getPayload',
+        path: 'resetAction.getPayload',
+        name: 'Create Payload',
+        description: 'Custom code to create payload for the reset data source request.',
+        editor: CustomCodeEditor,
+        category: ['Reset Request Payload'],
+        settings: {
+          type: CodeEditorType.GET_PAYLOAD,
+          variablesSuggestions: true,
+        },
+        defaultValue: INITIAL_PAYLOAD_DEFAULT,
+        showIf: (config) =>
+          config.reset.variant !== ButtonVariant.HIDDEN &&
+          config.resetAction.mode === ResetActionMode.DATASOURCE &&
+          !!config.resetAction.datasource,
+      })
+      .addCustomEditor({
+        id: 'resetAction.payload',
+        path: 'resetAction.payload',
+        name: 'Query Editor',
+        description: 'Configure query for the selected data source. ${payload} variable contains all passed values.',
+        editor: DatasourcePayloadEditor,
+        category: ['Reset Request Payload'],
+        settings: {
+          datasourceKey: 'resetAction.datasource',
+        },
+        defaultValue: {},
+        showIf: (config) =>
+          config.reset.variant !== ButtonVariant.HIDDEN &&
+          config.resetAction.mode === ResetActionMode.DATASOURCE &&
+          !!config.resetAction.datasource,
+      });
 
     /**
      * Save Defaults Button

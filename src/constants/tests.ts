@@ -133,4 +133,8 @@ export const TEST_IDS = {
   datasourceEditor: {
     fieldSelect: 'select-datasource-editor field-select',
   },
+  payloadEditor: {
+    loadingMessage: 'data-testid payload-editor loading-message',
+    errorMessage: 'data-testid payload-editor error-message',
+  },
 };
