@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { BusEventBase, dateTime, InterpolateFunction, PanelData, SelectableValue } from '@grafana/data';
 import { ButtonVariant as GrafanaButtonVariant } from '@grafana/ui';
+import lodash from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -609,4 +610,70 @@ export const applyLabelStyles = (labelBackground?: string, labelColor?: string):
         } 
     `}
   `;
+};
+
+/**
+ * Patch Form Value
+ * @param elements
+ * @param objectValues
+ */
+export const patchFormValueHandler = (elements: LocalFormElement[], objectValues: Record<string, unknown>) => {
+  const newElements: LocalFormElement[] = lodash.cloneDeep(elements);
+  newElements.forEach((item) => {
+    const newValue = objectValues[item.id];
+
+    /**
+     * Set Value
+     */
+    if (newValue !== null && newValue !== undefined) {
+      item.value = convertToElementValue(item, newValue).value;
+    }
+  });
+
+  return newElements;
+};
+
+/**
+ * Form Value
+ * @param elements
+ */
+export const formValueHandler = (elements: LocalFormElement[]) =>
+  elements.reduce<Record<string, unknown>>((acc, element) => {
+    acc[element.id] = element.value;
+    return acc;
+  }, {});
+
+/**
+ * Set Form Value
+ * @param elements
+ * @param initialElements
+ * @param objectValues
+ */
+export const setFormValueHandler = (
+  elements: LocalFormElement[],
+  initialElements: LocalFormElement[],
+  objectValues: Record<string, unknown>
+) => {
+  const newElements: LocalFormElement[] = lodash.cloneDeep(elements);
+  newElements.forEach((item) => {
+    const newValue = objectValues[item.id];
+
+    /**
+     * Set Value
+     */
+    if (newValue !== null && newValue !== undefined) {
+      item.value = convertToElementValue(item, newValue).value;
+    } else {
+      /**
+       * Set Initial value or reset to empty value
+       */
+      const initialElement = initialElements.find((initialElement) => initialElement.id === item.id);
+      item.value =
+        initialElement?.value !== undefined && initialElement?.value !== null
+          ? convertToElementValue(item, initialElement.value).value
+          : convertToElementValue(item, '').value;
+    }
+  });
+
+  return newElements;
 };

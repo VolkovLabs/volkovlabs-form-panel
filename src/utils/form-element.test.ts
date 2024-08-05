@@ -8,8 +8,11 @@ import {
   applyLabelStyles,
   convertToElementValue,
   formatElementValue,
+  formValueHandler,
   getButtonVariant,
+  patchFormValueHandler,
   reorder,
+  setFormValueHandler,
   toLocalFormElement,
   toNumberValue,
 } from './form-element';
@@ -533,6 +536,313 @@ describe('Utils', () => {
       toLocalFormElement(element);
       expect(logError).toHaveBeenCalled();
       expect(logError).toHaveBeenCalledWith('Code Error', expect.any(Error));
+    });
+  });
+
+  describe('toLocalFormElement', () => {
+    it('Should log error messages when there is an error in showIf function', () => {
+      const element = {
+        showIf: `const newValue = 'string'
+
+        if (newValue && ) {
+
+        } `,
+      } as any;
+
+      toLocalFormElement(element);
+      expect(logError).toHaveBeenCalled();
+      expect(logError).toHaveBeenCalledWith('Code Error', expect.any(Error));
+    });
+
+    it('Should log error messages when there is an error in disableIf function', () => {
+      const element = {
+        disableIf: `const newValue = 'string'
+
+        if (newValue && ) {
+
+        } `,
+      } as any;
+
+      toLocalFormElement(element);
+      expect(logError).toHaveBeenCalled();
+      expect(logError).toHaveBeenCalledWith('Code Error', expect.any(Error));
+    });
+
+    it('Should log error messages when there is an error in getOptions function', () => {
+      const element = {
+        type: FormElementType.SELECT,
+        optionsSource: OptionsSource.CODE,
+        getOptions: `const newValue = 'string'
+
+        if (newValue && ) {
+
+        } `,
+      } as any;
+
+      toLocalFormElement(element);
+      expect(logError).toHaveBeenCalled();
+      expect(logError).toHaveBeenCalledWith('Code Error', expect.any(Error));
+    });
+  });
+
+  describe('formValueHandler', () => {
+    it('Should return object with current values', () => {
+      const elements = [
+        {
+          name: 'test 1',
+          id: 'tst1',
+          value: '',
+        },
+        {
+          name: 'test 2',
+          id: 'tst2',
+          value: true,
+        },
+        {
+          name: 'test 3',
+          id: 'tst3',
+          value: [],
+        },
+        {
+          name: 'test 4',
+          id: 'tst4',
+          value: ['value1'],
+        },
+        {
+          name: 'test 5',
+          id: 'tst5',
+          value: {},
+        },
+        {
+          name: 'test 6',
+          id: 'tst6',
+        },
+      ] as any;
+
+      const result = formValueHandler(elements);
+
+      expect(result).toEqual({
+        tst1: '',
+        tst2: true,
+        tst3: [],
+        tst4: ['value1'],
+        tst5: {},
+        tst6: undefined,
+      });
+    });
+  });
+
+  describe('formValueHandler', () => {
+    it('Should return correct Element values based on passed object', () => {
+      const elements = [
+        {
+          name: 'test 1',
+          id: 'tst1',
+          value: '',
+        },
+        {
+          name: 'test 2',
+          id: 'tst2',
+          value: true,
+        },
+        {
+          name: 'test 3',
+          id: 'tst3',
+          value: [],
+        },
+        {
+          name: 'test 4',
+          id: 'tst4',
+          value: ['value1'],
+        },
+        {
+          name: 'test 5',
+          id: 'tst5',
+          value: {},
+        },
+        {
+          name: 'test 6',
+          id: 'tst6',
+          value: 1,
+        },
+      ] as any;
+
+      const objectvalues = {
+        tst1: 'Value 1',
+        tst3: ['value 1'],
+        tst6: 0,
+      } as any;
+
+      const result = patchFormValueHandler(elements, objectvalues);
+
+      expect(result).toEqual([
+        {
+          name: 'test 1',
+          id: 'tst1',
+          value: 'Value 1',
+        },
+        {
+          name: 'test 2',
+          id: 'tst2',
+          value: true,
+        },
+        {
+          name: 'test 3',
+          id: 'tst3',
+          value: ['value 1'],
+        },
+        {
+          name: 'test 4',
+          id: 'tst4',
+          value: ['value1'],
+        },
+        {
+          name: 'test 5',
+          id: 'tst5',
+          value: {},
+        },
+        {
+          name: 'test 6',
+          id: 'tst6',
+          value: 0,
+        },
+      ]);
+    });
+  });
+
+  describe('setFormValueHandler', () => {
+    it('Should return correct Element values based on passed object', () => {
+      const initialelements = [
+        {
+          name: 'test 1',
+          id: 'tst1',
+          value: '',
+        },
+        {
+          name: 'test 2',
+          id: 'tst2',
+          value: true,
+        },
+        {
+          name: 'test 3',
+          id: 'tst3',
+          value: [],
+        },
+        {
+          name: 'test 4',
+          id: 'tst4',
+          value: ['value1'],
+        },
+        {
+          name: 'test 5',
+          id: 'tst5',
+          value: {},
+        },
+        {
+          name: 'test 6',
+          id: 'tst6',
+          value: 1,
+        },
+        {
+          name: 'test 7',
+          id: 'tst7',
+          value: 0,
+        },
+      ] as any;
+
+      const elements = [
+        {
+          name: 'test 1',
+          id: 'tst1',
+          value: 'Value 2',
+        },
+        {
+          name: 'test 2',
+          id: 'tst2',
+          value: false,
+        },
+        {
+          name: 'test 3',
+          id: 'tst3',
+          value: [],
+        },
+        {
+          name: 'test 4',
+          id: 'tst4',
+          value: ['value1'],
+        },
+        {
+          name: 'test 5',
+          id: 'tst5',
+          value: {},
+        },
+        {
+          name: 'test 6',
+          id: 'tst6',
+          value: 1,
+        },
+        {
+          name: 'test 7',
+          id: 'tst7',
+          value: 15,
+        },
+        {
+          name: 'test 8',
+          id: 'tst8',
+          value: 15,
+        },
+      ] as any;
+
+      const objectvalues = {
+        tst1: 'Value 1',
+        tst3: ['value 1'],
+        tst6: 0,
+      } as any;
+
+      const result = setFormValueHandler(elements, initialelements, objectvalues);
+
+      expect(result).toEqual([
+        {
+          name: 'test 1',
+          id: 'tst1',
+          value: 'Value 1',
+        },
+        {
+          name: 'test 2',
+          id: 'tst2',
+          value: true,
+        },
+        {
+          name: 'test 3',
+          id: 'tst3',
+          value: ['value 1'],
+        },
+        {
+          name: 'test 4',
+          id: 'tst4',
+          value: ['value1'],
+        },
+        {
+          name: 'test 5',
+          id: 'tst5',
+          value: {},
+        },
+        {
+          name: 'test 6',
+          id: 'tst6',
+          value: 0,
+        },
+        {
+          name: 'test 7',
+          id: 'tst7',
+          value: 0,
+        },
+        {
+          name: 'test 8',
+          id: 'tst8',
+          value: '',
+        },
+      ]);
     });
   });
 });

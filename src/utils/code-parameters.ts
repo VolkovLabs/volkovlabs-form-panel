@@ -26,6 +26,18 @@ export const requestCodeParameters = new CodeParametersBuilder({
           'Update panel elements.',
           CodeEditorSuggestionItemKind.Method
         ),
+        patchFormValue: new CodeParameterItem<(objectValues: Record<string, unknown>) => void>(
+          'Patch panel elements.',
+          CodeEditorSuggestionItemKind.Method
+        ),
+        setFormValue: new CodeParameterItem<(objectValues: Record<string, unknown>) => void>(
+          'Set panel elements.',
+          CodeEditorSuggestionItemKind.Method
+        ),
+        formValue: new CodeParameterItem<() => Record<string, unknown>>(
+          'Return Current form value.',
+          CodeEditorSuggestionItemKind.Method
+        ),
         initial: new CodeParameterItem<unknown>('Initial values.'),
         setInitial: new CodeParameterItem<(value: { [id: string]: unknown }) => void>(
           'Allows to specify the initial values.',
@@ -112,6 +124,18 @@ export const elementValueChangedCodeParameters = new CodeParametersBuilder({
         elements: new CodeParameterItem<LocalFormElement[]>('Panel elements.'),
         onChangeElements: new CodeParameterItem<(elements: LocalFormElement[]) => void>(
           'Update panel elements.',
+          CodeEditorSuggestionItemKind.Method
+        ),
+        patchFormValue: new CodeParameterItem<(objectValues: Record<string, unknown>) => void>(
+          'Patch panel elements.',
+          CodeEditorSuggestionItemKind.Method
+        ),
+        setFormValue: new CodeParameterItem<(objectValues: Record<string, unknown>) => void>(
+          'Set panel elements.',
+          CodeEditorSuggestionItemKind.Method
+        ),
+        formValue: new CodeParameterItem<() => Record<string, unknown>>(
+          'Return Current form value.',
           CodeEditorSuggestionItemKind.Method
         ),
         initial: new CodeParameterItem<unknown>('Initial values.'),

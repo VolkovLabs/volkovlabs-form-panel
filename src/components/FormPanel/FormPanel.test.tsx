@@ -1583,6 +1583,108 @@ describe('Panel', () => {
       });
     });
 
+    it('Should execute code on initial request with patchFormValue correctly', async () => {
+      /**
+       * Render
+       */
+      const replaceVariables = jest.fn((code) => code);
+
+      await act(async () =>
+        render(
+          getComponent({
+            props: {
+              replaceVariables,
+            },
+            options: {
+              elements: [
+                { id: 'test', type: FormElementType.STRING, value: '111' },
+                { id: 'test2', type: FormElementType.NUMBER, value: 10 },
+              ],
+              initial: {
+                method: RequestMethod.NONE,
+                code: `context.panel.patchFormValue({ test2: '15' });`,
+              },
+            },
+          })
+        )
+      );
+      expect(replaceVariables).toHaveBeenCalledWith(`context.panel.patchFormValue({ test2: '15' });`);
+
+      expect(elementsSelectors.fieldNumber()).toBeInTheDocument();
+      expect(elementsSelectors.fieldNumber()).toHaveValue(15);
+    });
+
+    it('Should execute code on initial request with setFormValue correctly', async () => {
+      /**
+       * Render
+       */
+      const replaceVariables = jest.fn((code) => code);
+
+      await act(async () =>
+        render(
+          getComponent({
+            props: {
+              replaceVariables,
+            },
+            options: {
+              elements: [
+                { id: 'test', type: FormElementType.STRING, value: '111' },
+                { id: 'test2', type: FormElementType.NUMBER, value: 10 },
+              ],
+              initial: {
+                method: RequestMethod.NONE,
+                code: `context.panel.setFormValue({ test2: '15' });`,
+              },
+            },
+          })
+        )
+      );
+
+      expect(replaceVariables).toHaveBeenCalledWith(`context.panel.setFormValue({ test2: '15' });`);
+
+      expect(elementsSelectors.fieldNumber()).toBeInTheDocument();
+      expect(elementsSelectors.fieldNumber()).toHaveValue(15);
+    });
+
+    it('Should execute code on initial request with formValue correctly', async () => {
+      /**
+       * Render
+       */
+      const replaceVariables = jest.fn((code) => code);
+
+      await act(async () =>
+        render(
+          getComponent({
+            props: {
+              replaceVariables,
+            },
+            options: {
+              elements: [
+                { id: 'test', type: FormElementType.STRING, value: 'success test' },
+                { id: 'test2', type: FormElementType.NUMBER, value: 10 },
+              ],
+              initial: {
+                method: RequestMethod.NONE,
+                code: `const payload = context.panel.formValue(); context.grafana.notifySuccess(payload.test)`,
+              },
+            },
+          })
+        )
+      );
+
+      expect(replaceVariables).toHaveBeenCalledWith(
+        `const payload = context.panel.formValue(); context.grafana.notifySuccess(payload.test)`
+      );
+
+      expect(elementsSelectors.fieldNumber()).toBeInTheDocument();
+      expect(elementsSelectors.fieldNumber()).toHaveValue(10);
+
+      expect(appEventsMock.publish).toHaveBeenCalledWith({
+        type: AppEvents.alertSuccess.name,
+        payload: 'success test',
+      });
+    });
+
     it('Should execute code on update request', async () => {
       /**
        * Render

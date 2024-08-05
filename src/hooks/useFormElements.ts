@@ -3,10 +3,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { FormElement, LayoutSection, LocalFormElement } from '../types';
 import {
+  formValueHandler,
   isElementConflict,
   isElementOptionConflict,
   normalizeElementsForDashboard,
   normalizeElementsForLocalState,
+  patchFormValueHandler,
+  setFormValueHandler,
   ValueChangedEvent,
 } from '../utils';
 import { useAutoSave } from './useAutoSave';
@@ -166,6 +169,32 @@ export const useFormElements = ({
   );
 
   /**
+   * Patch Form Values
+   */
+  const patchFormValue = useCallback(
+    (objectValues: Record<string, unknown>) =>
+      onChangeElements(patchFormValueHandler(elementsRef.current, objectValues)),
+    [elementsRef, onChangeElements]
+  );
+
+  /**
+   * Form Values
+   */
+  const formValue = useCallback(() => {
+    return formValueHandler(elementsRef.current);
+  }, [elementsRef]);
+
+  /**
+   * Patch Form Values
+   */
+  const setFormValue = useCallback(
+    (objectValues: Record<string, unknown>) => {
+      onChangeElements(setFormValueHandler(elementsRef.current, normalizeElementsForLocalState(value), objectValues));
+    },
+    [elementsRef, onChangeElements, value]
+  );
+
+  /**
    * Update local elements
    */
   useEffect(() => {
@@ -203,5 +232,8 @@ export const useFormElements = ({
     elementsRef,
     sectionsExpandedState,
     onChangeSectionExpandedState,
+    patchFormValue,
+    setFormValue,
+    formValue,
   };
 };
