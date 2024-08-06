@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import React from 'react';
 
 import { FORM_ELEMENT_DEFAULT, FormElementType, OptionsSource } from '../../constants';
-import { LinkTarget } from '../../types';
+import { ButtonVariant, CustomButtonShow, LinkTarget } from '../../types';
 import { getFormElementsSelectors, normalizeElementsForLocalState } from '../../utils';
 import { FormElements } from './FormElements';
 
@@ -354,6 +354,77 @@ describe('Form Elements', () => {
      * Time Element
      */
     expect(selectors.fieldTime()).toBeInTheDocument();
+  });
+
+  it('Should find component Custom Button', async () => {
+    const options = {
+      submit: {},
+      initial: { highlightColor: false },
+      update: {},
+      reset: {},
+      elements: [
+        {
+          id: 'elementButton-1-1',
+          type: FormElementType.CUSTOM_BUTTON,
+          value: '',
+          show: CustomButtonShow.FORM,
+          customCode: '',
+          title: 'Custom Button',
+          foregroundColor: 'red',
+          backgroundColor: '#3274D9',
+          variant: ButtonVariant.CUSTOM,
+        },
+      ],
+    };
+
+    render(getComponent({ options, onChangeElement }));
+
+    /**
+     * Element
+     */
+    expect(selectors.element(false, 'elementButton-1-1', FormElementType.CUSTOM_BUTTON)).toBeInTheDocument();
+
+    expect(selectors.fieldCustomButtonContainer()).toBeInTheDocument();
+  });
+
+  it('Should execute code on click', async () => {
+    const executeCustomCode = jest.fn();
+    const options = {
+      submit: {},
+      initial: { highlightColor: false },
+      update: {},
+      reset: {},
+      elements: [
+        {
+          id: 'elementButton-1-1',
+          type: FormElementType.CUSTOM_BUTTON,
+          value: '',
+          show: CustomButtonShow.FORM,
+          customCode: `console.log('test')`,
+          title: 'Custom Button',
+          buttonLabel: 'Test 1',
+        },
+      ],
+    };
+
+    render(getComponent({ options, onChangeElement, executeCustomCode, initial: {} }));
+
+    /**
+     * Element
+     */
+    expect(selectors.element(false, 'elementButton-1-1', FormElementType.CUSTOM_BUTTON)).toBeInTheDocument();
+
+    expect(selectors.fieldCustomButtonContainer()).toBeInTheDocument();
+    expect(selectors.fieldCustomButton(false, 'elementButton-1-1')).toBeInTheDocument();
+
+    await act(() => fireEvent.click(selectors.fieldCustomButton(false, 'elementButton-1-1')));
+
+    expect(executeCustomCode).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initial: {},
+        code: "console.log('test')",
+      })
+    );
   });
 
   it('Should find component with Select and unset value', async () => {

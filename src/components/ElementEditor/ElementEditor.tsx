@@ -2,6 +2,7 @@ import { DataFrame, SelectableValue } from '@grafana/data';
 import {
   ColorPicker,
   Field,
+  getAvailableIcons,
   IconButton,
   InlineField,
   InlineFieldRow,
@@ -11,22 +12,25 @@ import {
   useStyles2,
 } from '@grafana/ui';
 import { AutosizeCodeEditor } from '@volkovlabs/components';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useMemo } from 'react';
 
 import {
   BOOLEAN_OPTIONS,
   CODE_EDITOR_SUGGESTIONS,
   CODE_LANGUAGE_OPTIONS,
+  CUSTOM_BUTTON_SIZE_OPTIONS,
+  CUSTOM_BUTTON_VARIANT_OPTIONS,
   FORM_ELEMENT_TYPE_OPTIONS,
   FormElementType,
   LINK_TARGET_OPTIONS,
   OPTIONS_SOURCE_OPTIONS,
   OptionsSource,
+  SHOW_CUSTOM_BUTTON_OPTIONS,
   STRING_ELEMENT_OPTIONS,
   TEST_IDS,
   TIME_TRANSFORMATION_OPTIONS,
 } from '../../constants';
-import { CodeLanguage, LocalFormElement } from '../../types';
+import { ButtonVariant, CodeLanguage, LocalFormElement } from '../../types';
 import {
   formatNumberValue,
   getElementWithNewType,
@@ -84,6 +88,18 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
   const styles = useStyles2(getStyles);
 
   /**
+   * Icon Options
+   */
+  const iconOptions = useMemo(() => {
+    return getAvailableIcons().map((icon): SelectableValue => {
+      return {
+        value: icon,
+        label: icon,
+      };
+    });
+  }, []);
+
+  /**
    * Return
    */
   return (
@@ -106,7 +122,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
           />
         </InlineField>
 
-        {element.type === FormElementType.STRING && (
+        {isFormElementType(element, FormElementType.STRING) && (
           <InlineField data-testid={TEST_IDS.formElementsEditor.fieldVisibility}>
             <RadioButtonGroup
               options={STRING_ELEMENT_OPTIONS}
@@ -245,6 +261,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
             )}
           </div>
         </InlineField>
+
         <InlineField className={styles.colorPickerContainer} label="Label Background" grow={true}>
           <div className={styles.colorPickerButtons}>
             <ColorPicker
@@ -274,6 +291,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
             )}
           </div>
         </InlineField>
+
         <InlineField className={styles.colorPickerContainer} label="Label Color" grow>
           <div className={styles.colorPickerButtons}>
             <ColorPicker
@@ -323,7 +341,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </InlineFieldRow>
       )}
 
-      {element.type === FormElementType.SLIDER && (
+      {isFormElementType(element, FormElementType.SLIDER) && (
         <InlineFieldRow>
           <InlineField label="Min" labelWidth={8}>
             <Input
@@ -373,7 +391,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </InlineFieldRow>
       )}
 
-      {element.type === FormElementType.NUMBER && (
+      {isFormElementType(element, FormElementType.NUMBER) && (
         <InlineFieldRow>
           <InlineField label="Min" labelWidth={8}>
             <Input
@@ -408,7 +426,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </InlineFieldRow>
       )}
 
-      {element.type === FormElementType.DATETIME && (
+      {isFormElementType(element, FormElementType.DATETIME) && (
         <>
           <ElementDateEditor
             label="Min"
@@ -447,7 +465,8 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </>
       )}
 
-      {(element.type === FormElementType.TEXTAREA || element.type === FormElementType.DISABLED_TEXTAREA) && (
+      {(isFormElementType(element, FormElementType.TEXTAREA) ||
+        isFormElementType(element, FormElementType.DISABLED_TEXTAREA)) && (
         <InlineFieldRow>
           <InlineField label="Rows" labelWidth={8}>
             <Input
@@ -468,7 +487,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </InlineFieldRow>
       )}
 
-      {element.type === FormElementType.CODE && (
+      {isFormElementType(element, FormElementType.CODE) && (
         <InlineFieldRow>
           <InlineField label="Language" grow labelWidth={10}>
             <Select
@@ -501,7 +520,7 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </InlineFieldRow>
       )}
 
-      {element.type === FormElementType.FILE && (
+      {isFormElementType(element, FormElementType.FILE) && (
         <InlineFieldRow>
           <InlineField
             grow={true}
@@ -565,11 +584,11 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </InlineFieldRow>
       )}
 
-      {(element.type === FormElementType.RADIO ||
-        element.type === FormElementType.SELECT ||
-        element.type === FormElementType.MULTISELECT ||
-        element.type === FormElementType.DISABLED ||
-        element.type === FormElementType.CHECKBOX_LIST) && (
+      {(isFormElementType(element, FormElementType.RADIO) ||
+        isFormElementType(element, FormElementType.SELECT) ||
+        isFormElementType(element, FormElementType.MULTISELECT) ||
+        isFormElementType(element, FormElementType.DISABLED) ||
+        isFormElementType(element, FormElementType.CHECKBOX_LIST)) && (
         <>
           <InlineFieldRow>
             <InlineField label="Options Source" labelWidth={14}>
@@ -638,6 +657,147 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         </>
       )}
 
+      {isFormElementType(element, FormElementType.CUSTOM_BUTTON) && (
+        <>
+          <InlineField
+            label="Text"
+            grow
+            labelWidth={8}
+            tooltip="The text on the button.
+"
+          >
+            <Input
+              placeholder="Text"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                onChange({
+                  ...element,
+                  buttonLabel: event.target.value,
+                });
+              }}
+              value={element.buttonLabel}
+              data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonLabel}
+            />
+          </InlineField>
+          <InlineField label="Icon" grow>
+            <Select
+              options={iconOptions}
+              isClearable
+              onChange={(event: SelectableValue) => {
+                onChange({
+                  ...element,
+                  icon: event?.value,
+                });
+              }}
+              value={element.icon}
+              aria-label={TEST_IDS.formElementsEditor.fieldCustomButtonIcon}
+              data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonIcon}
+            />
+          </InlineField>
+          <InlineField grow label="Button Size" data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonSize}>
+            <RadioButtonGroup
+              options={CUSTOM_BUTTON_SIZE_OPTIONS}
+              value={element.size}
+              onChange={(value) => {
+                onChange({
+                  ...element,
+                  size: value,
+                });
+              }}
+            />
+          </InlineField>
+          <InlineField
+            grow
+            label="Button place"
+            tooltip="Positioning of the button among the form elements."
+            data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonPlace}
+          >
+            <RadioButtonGroup
+              options={SHOW_CUSTOM_BUTTON_OPTIONS}
+              value={element.show}
+              onChange={(value) => {
+                onChange({
+                  ...element,
+                  show: value,
+                });
+              }}
+            />
+          </InlineField>
+
+          <InlineField grow label="Button variant" data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonVariant}>
+            <RadioButtonGroup
+              options={CUSTOM_BUTTON_VARIANT_OPTIONS}
+              value={element.variant}
+              onChange={(value) => {
+                onChange({
+                  ...element,
+                  variant: value,
+                });
+              }}
+            />
+          </InlineField>
+
+          {element.variant === ButtonVariant.CUSTOM && (
+            <InlineFieldRow>
+              <InlineField
+                className={styles.colorPickerContainer}
+                label="Foreground Color"
+                tooltip="Foreground color of the button."
+                grow
+              >
+                <div className={styles.colorPickerButtons}>
+                  <ColorPicker
+                    data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonForeground}
+                    color={element.foregroundColor || 'transparent'}
+                    onChange={(color) => {
+                      onChange({
+                        ...element,
+                        foregroundColor: color,
+                      });
+                    }}
+                  />
+                </div>
+              </InlineField>
+              <InlineField
+                className={styles.colorPickerContainer}
+                label="Background Color"
+                tooltip="Background color of the button."
+                grow
+              >
+                <div className={styles.colorPickerButtons}>
+                  <ColorPicker
+                    data-testid={TEST_IDS.formElementsEditor.fieldCustomButtonBackground}
+                    color={element.backgroundColor || 'transparent'}
+                    onChange={(color) => {
+                      onChange({
+                        ...element,
+                        backgroundColor: color,
+                      });
+                    }}
+                  />
+                </div>
+              </InlineField>
+            </InlineFieldRow>
+          )}
+
+          <Field label="Code to execute for button">
+            <AutosizeCodeEditor
+              value={element.customCode || ''}
+              language={CodeLanguage.JAVASCRIPT}
+              onBlur={(code) => {
+                onChange({
+                  ...element,
+                  customCode: code,
+                });
+              }}
+              monacoOptions={{ formatOnPaste: true, formatOnType: true }}
+              showLineNumbers={true}
+              aria-label={TEST_IDS.formElementsEditor.fieldCustomButtonCustomCode}
+              getSuggestions={() => CODE_EDITOR_SUGGESTIONS.request}
+            />
+          </Field>
+        </>
+      )}
+
       <Field label="Show if returned value is true">
         <AutosizeCodeEditor
           value={element.showIf || ''}
@@ -655,9 +815,9 @@ export const ElementEditor: React.FC<Props> = ({ element, onChange, onChangeOpti
         />
       </Field>
 
-      {element.type !== FormElementType.DISABLED_TEXTAREA &&
-        element.type !== FormElementType.DISABLED &&
-        element.type !== FormElementType.LINK && (
+      {!isFormElementType(element, FormElementType.DISABLED_TEXTAREA) &&
+        !isFormElementType(element, FormElementType.DISABLED) &&
+        !isFormElementType(element, FormElementType.LINK) && (
           <Field label="Disable if returned value is true">
             <AutosizeCodeEditor
               value={element.disableIf || ''}

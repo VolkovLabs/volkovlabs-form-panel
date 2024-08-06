@@ -1,7 +1,7 @@
 import { SelectableValue } from '@grafana/data';
 import { getAvailableIcons } from '@grafana/ui';
 
-import { LinkTarget } from '../types';
+import { ButtonSize, ButtonVariant, CustomButtonShow, LinkTarget } from '../types';
 import { TEST_IDS } from './tests';
 
 /**
@@ -10,6 +10,7 @@ import { TEST_IDS } from './tests';
 export const enum FormElementType {
   BOOLEAN = 'boolean',
   CODE = 'code',
+  CUSTOM_BUTTON = 'Custom button',
   DATETIME = 'datetime',
   DISABLED = 'disabled',
   DISABLED_TEXTAREA = 'disabledTextarea',
@@ -39,6 +40,10 @@ export const FORM_ELEMENT_TYPE_OPTIONS: SelectableValue[] = [
   {
     value: FormElementType.CODE,
     label: 'Code Editor',
+  },
+  {
+    value: FormElementType.CUSTOM_BUTTON,
+    label: 'Custom Button',
   },
   {
     value: FormElementType.DATETIME,
@@ -238,5 +243,68 @@ export const LINK_TARGET_OPTIONS = [
     value: LinkTarget.NEW_TAB,
     ariaLabel: TEST_IDS.formElementsEditor.linkTargetOption(LinkTarget.NEW_TAB),
     icon: 'external-link-alt',
+  },
+];
+
+/**
+ * Show Custom Button Options
+ */
+export const SHOW_CUSTOM_BUTTON_OPTIONS: SelectableValue[] = [
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonPlaceOption('form'),
+    value: CustomButtonShow.FORM,
+    label: 'In Line',
+  },
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonPlaceOption('bottom'),
+    value: CustomButtonShow.BOTTOM,
+    label: 'Footer',
+  },
+];
+
+/**
+ * Custom Button Size Options
+ */
+export const CUSTOM_BUTTON_SIZE_OPTIONS: SelectableValue[] = [
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonSizeOption('sm'),
+    value: ButtonSize.SMALL,
+    label: 'Small',
+  },
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonSizeOption('md'),
+    value: ButtonSize.MEDIUM,
+    label: 'Medium',
+  },
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonSizeOption('lg'),
+    value: ButtonSize.LARGE,
+    label: 'Large',
+  },
+];
+
+/**
+ * Custom Button Variant
+ */
+export const CUSTOM_BUTTON_VARIANT_OPTIONS: SelectableValue[] = [
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonVariantOption('primary'),
+    value: ButtonVariant.PRIMARY,
+    label: 'Primary',
+  },
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonVariantOption('secondary'),
+    value: ButtonVariant.SECONDARY,
+    label: 'Secondary',
+  },
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonVariantOption('destructive'),
+    value: ButtonVariant.DESTRUCTIVE,
+    label: 'Destructive',
+  },
+  {
+    ariaLabel: TEST_IDS.formElementsEditor.customButtonVariantOption('custom'),
+    value: ButtonVariant.CUSTOM,
+    label: 'Custom',
   },
 ];

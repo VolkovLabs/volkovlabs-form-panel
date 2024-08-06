@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   CODE_DEFAULT,
+  CUSTOM_BUTTON_DEFAULT,
   FormElementType,
   NUMBER_DEFAULT,
   OptionsSource,
@@ -169,6 +170,14 @@ export const getElementWithNewType = (
       return {
         ...baseValues,
         value: false,
+        type: newType,
+      };
+    }
+    case FormElementType.CUSTOM_BUTTON: {
+      return {
+        ...baseValues,
+        ...CUSTOM_BUTTON_DEFAULT,
+        value: '',
         type: newType,
       };
     }
@@ -449,6 +458,7 @@ export const convertToElementValue = (
     case FormElementType.PASSWORD:
     case FormElementType.SECRET:
     case FormElementType.TEXTAREA:
+    case FormElementType.CUSTOM_BUTTON:
     case FormElementType.LINK: {
       return {
         ...element,

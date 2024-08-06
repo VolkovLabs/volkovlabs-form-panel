@@ -1,3 +1,4 @@
+export * from './CustomButtonsRow';
 export * from './CustomCodeEditor';
 export * from './DatasourceEditor';
 export * from './DatasourcePayloadEditor';

@@ -20,6 +20,7 @@ import {
   toDataQueryResponse,
 } from '@grafana/runtime';
 import { Alert, Button, ButtonGroup, ConfirmModal, usePanelContext, useStyles2, useTheme2 } from '@grafana/ui';
+import { CustomButtonsRow } from 'components/CustomButtonsRow';
 import { isEqual } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -80,6 +81,9 @@ export const FormPanel: React.FC<Props> = ({
   replaceVariables,
   data,
 }) => {
+  /**
+   * State
+   */
   const [loading, setLoading] = useState<LoadingMode>(LoadingMode.INITIAL);
   const [error, setError] = useState('');
   const [title, setTitle] = useState('');
@@ -219,7 +223,7 @@ export const FormPanel: React.FC<Props> = ({
       response?: FetchResponse | Response | DataQueryResponse | null;
       initialRequest?: () => Promise<void>;
       currentElements?: LocalFormElement[];
-    }) => {
+    }): Promise<void> => {
       if (!code) {
         return;
       }
@@ -913,6 +917,7 @@ export const FormPanel: React.FC<Props> = ({
               initial={initial}
               section={null}
               replaceVariables={replaceVariables}
+              executeCustomCode={executeCustomCode}
             />
           </div>
         ) : (
@@ -925,10 +930,18 @@ export const FormPanel: React.FC<Props> = ({
             replaceVariables={replaceVariables}
             sectionsExpandedState={sectionsExpandedState}
             onChangeSectionExpandedState={onChangeSectionExpandedState}
+            executeCustomCode={executeCustomCode}
           />
         )}
       </div>
       <ButtonGroup className={cx(styles.button[options.buttonGroup.orientation])}>
+        <CustomButtonsRow
+          data={data}
+          executeCustomCode={executeCustomCode}
+          initial={initial}
+          elements={elements}
+          replaceVariables={replaceVariables}
+        />
         {options.updateEnabled !== UpdateEnabledMode.DISABLED && (
           <Button
             className={cx(styles.margin)}

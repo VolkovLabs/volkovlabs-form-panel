@@ -21,6 +21,7 @@ import { useDatasourceRequest } from '../../hooks';
 import {
   ButtonOrientation,
   ButtonVariant,
+  CustomButtonShow,
   FormElement,
   LocalFormElement,
   ModalColumnName,
@@ -274,6 +275,122 @@ describe('Panel', () => {
 
     expect(selectors.buttonSubmit()).toBeInTheDocument();
     expect(selectors.buttonReset()).toBeInTheDocument();
+  });
+
+  it('Should render custom buttons after form buttons ', async () => {
+    /**
+     * Render
+     */
+    const replaceVariables = jest.fn((code) => code);
+
+    await act(async () =>
+      render(
+        getComponent({
+          props: {
+            replaceVariables,
+          },
+          options: {
+            initial: {
+              method: RequestMethod.NONE,
+            },
+            elements: [
+              { ...FORM_ELEMENT_DEFAULT, id: 'test', value: '123' },
+              { type: FormElementType.NUMBER, id: 'number', value: 111, unit: 'test' },
+              { type: FormElementType.DISABLED, id: 'disabled', value: '222' },
+              { type: FormElementType.STRING, id: 'string1', value: 'str1' },
+              { type: FormElementType.STRING, id: 'string2', value: 'str2' },
+              {
+                type: FormElementType.CUSTOM_BUTTON,
+                id: 'button1',
+                value: '',
+                customCode: `context.grafana.notifySuccess("success");`,
+                title: 'Custom Button',
+                buttonLabel: 'Test 1',
+                show: CustomButtonShow.BOTTOM,
+                unit: 'test 2',
+                foregroundColor: 'red',
+                backgroundColor: '#3274D9',
+                variant: ButtonVariant.PRIMARY,
+              },
+            ],
+          },
+        })
+      )
+    );
+
+    expect(selectors.buttonSubmit()).toBeInTheDocument();
+    expect(selectors.buttonReset()).toBeInTheDocument();
+    expect(elementsSelectors.customButtonsRow()).toBeInTheDocument();
+
+    expect(elementsSelectors.fieldCustomButtonContainer(true)).not.toBeInTheDocument();
+
+    expect(elementsSelectors.fieldCustomButton(false, 'button1')).toBeInTheDocument();
+  });
+  it('Should render custom buttons after form buttons and execute code', async () => {
+    /**
+     * Render
+     */
+    const replaceVariables = jest.fn((code) => code);
+
+    await act(async () =>
+      render(
+        getComponent({
+          props: {
+            replaceVariables,
+          },
+          options: {
+            initial: {
+              method: RequestMethod.NONE,
+            },
+            elements: [
+              { ...FORM_ELEMENT_DEFAULT, id: 'test', value: '123' },
+              { type: FormElementType.NUMBER, id: 'number', value: 111, unit: 'test' },
+              { type: FormElementType.DISABLED, id: 'disabled', value: '222' },
+              { type: FormElementType.STRING, id: 'string1', value: 'str1' },
+              { type: FormElementType.STRING, id: 'string2', value: 'str2' },
+              {
+                type: FormElementType.CUSTOM_BUTTON,
+                id: 'button1',
+                value: '',
+                customCode: `context.grafana.notifySuccess("success");`,
+                title: 'Custom Button',
+                buttonLabel: 'Test 1',
+                show: CustomButtonShow.BOTTOM,
+                unit: 'test 2',
+                foregroundColor: 'red',
+                backgroundColor: '#3274D9',
+                variant: ButtonVariant.CUSTOM,
+              },
+            ],
+          },
+        })
+      )
+    );
+
+    expect(selectors.buttonSubmit()).toBeInTheDocument();
+    expect(selectors.buttonReset()).toBeInTheDocument();
+    expect(elementsSelectors.customButtonsRow()).toBeInTheDocument();
+
+    expect(elementsSelectors.fieldCustomButtonContainer(true)).not.toBeInTheDocument();
+
+    expect(elementsSelectors.fieldCustomButton(false, 'button1')).toBeInTheDocument();
+
+    expect(elementsSelectors.fieldCustomButton(false, 'button1')).toHaveStyle({
+      'background-color': 'rgb(50, 116, 217)',
+    });
+
+    /**
+     * Run Execute code
+     */
+    await act(async () => {
+      fireEvent.click(elementsSelectors.fieldCustomButton(false, 'button1'));
+    });
+
+    expect(replaceVariables).toHaveBeenCalledWith('context.grafana.notifySuccess("success");');
+    expect(appEventsMock.publish).toHaveBeenCalledWith({
+      type: AppEvents.alertSuccess.name,
+      payload: 'success',
+    });
   });
 
   /**

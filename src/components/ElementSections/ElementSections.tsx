@@ -5,7 +5,7 @@ import { CollapsableSection } from '@volkovlabs/components';
 import React from 'react';
 
 import { LayoutOrientation, SectionVariant, TEST_IDS } from '../../constants';
-import { LocalFormElement, PanelOptions } from '../../types';
+import { ExecuteCustomCodeParams, LocalFormElement, PanelOptions } from '../../types';
 import { FormElements } from '../FormElements';
 import { getStyles } from './ElementSections.styles';
 
@@ -59,6 +59,11 @@ interface Props {
    * On Change Section Expanded State
    */
   onChangeSectionExpandedState: (id: string, isExpanded: boolean) => void;
+
+  /**
+   * Execute Custom Code
+   */
+  executeCustomCode: (params: ExecuteCustomCodeParams) => Promise<unknown>;
 }
 
 /**
@@ -73,6 +78,7 @@ export const ElementSections: React.FC<Props> = ({
   data,
   sectionsExpandedState,
   onChangeSectionExpandedState,
+  executeCustomCode,
 }) => {
   /**
    * Theme and Styles
@@ -128,6 +134,7 @@ export const ElementSections: React.FC<Props> = ({
                 section={section}
                 replaceVariables={replaceVariables}
                 data={data}
+                executeCustomCode={executeCustomCode}
               />
             )}
           </div>

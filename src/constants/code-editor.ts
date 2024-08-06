@@ -89,7 +89,7 @@ export const CODE_LANGUAGE_OPTIONS: SelectableValue[] = [
  */
 export const CODE_EDITOR_SUGGESTIONS: Record<CodeEditorType, CodeEditorSuggestionItem[]> = {
   /**
-   * Initial, update or reset request
+   * Initial, execute custom code, update or reset request
    */
   [CodeEditorType.REQUEST]: requestCodeParameters.suggestions,
 

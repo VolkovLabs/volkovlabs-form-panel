@@ -1,7 +1,8 @@
-import { InterpolateFunction, PanelData, SelectableValue } from '@grafana/data';
+import { DataQueryResponse, IconName, InterpolateFunction, PanelData, SelectableValue } from '@grafana/data';
+import { FetchResponse } from '@grafana/runtime';
 
 import { FormElementType, OptionsSource } from '../constants';
-import { CodeLanguage } from '../types';
+import { ButtonSize, ButtonVariant, CodeLanguage } from '../types';
 
 /**
  * Query Field
@@ -408,6 +409,74 @@ export interface BooleanOptions {
 }
 
 /**
+ * Custom Button Options
+ */
+export interface CustomButtonOptions {
+  /**
+   * Custom Code
+   *
+   * @type {string}
+   */
+  customCode: string;
+
+  /**
+   * Title
+   *
+   * @type {string}
+   */
+  title?: string;
+
+  /**
+   * Icon
+   *
+   * @type {IconName}
+   */
+  icon: IconName;
+
+  /**
+   * Size
+   *
+   * @type {ButtonSize}
+   */
+  size: ButtonSize;
+
+  /**
+   * Show
+   *
+   * @type {string}
+   */
+  show: string;
+
+  /**
+   * Variant
+   *
+   * @type {ButtonVariant}
+   */
+  variant: ButtonVariant;
+
+  /**
+   * Foreground Color
+   *
+   * @type {string}
+   */
+  foregroundColor: string;
+
+  /**
+   * Background Color
+   *
+   * @type {string}
+   */
+  backgroundColor: string;
+
+  /**
+   * Button label
+   *
+   * @type {string}
+   */
+  buttonLabel: string;
+}
+
+/**
  * Secret Options
  */
 export interface SecretOptions {
@@ -484,6 +553,7 @@ export type FormElement = FormElementBase &
     | ({ type: FormElementType.DATETIME } & DateTimeOptions)
     | ({ type: FormElementType.SECRET } & SecretOptions)
     | ({ type: FormElementType.BOOLEAN } & BooleanOptions)
+    | ({ type: FormElementType.CUSTOM_BUTTON } & CustomButtonOptions)
     | ({ type: FormElementType.FILE } & FileOptions)
     | ({ type: FormElementType.LINK } & LinkOptions)
     | ({ type: FormElementType.CHECKBOX_LIST } & CheckboxListOptions)
@@ -555,3 +625,42 @@ export type LocalFormElement = FormElement & {
  * Form Element By Type
  */
 export type FormElementByType<TElement, TType> = Extract<TElement, { type: TType }>;
+
+/**
+ * Execute Custom Code Params
+ */
+export type ExecuteCustomCodeParams = {
+  /**
+   * Code
+   *
+   * @type {string}
+   */
+  code: string;
+
+  /**
+   * Initial
+   *
+   * @type {unknown}
+   */
+  initial: unknown;
+
+  /**
+   * Response
+   *
+   * @type {FetchResponse | Response | DataQueryResponse | null}
+   */
+  response?: FetchResponse | Response | DataQueryResponse | null;
+
+  /**
+   * Initial Request
+   *
+   */
+  initialRequest?: () => Promise<void>;
+
+  /**
+   * Current Elements
+   *
+   * @type {LocalFormElement[]}
+   */
+  currentElements?: LocalFormElement[];
+};

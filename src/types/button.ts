@@ -87,3 +87,11 @@ export interface ButtonOptions {
    */
   backgroundColor: string;
 }
+
+/**
+ * Custom button show
+ */
+export const enum CustomButtonShow {
+  FORM = 'form',
+  BOTTOM = 'bottom',
+}

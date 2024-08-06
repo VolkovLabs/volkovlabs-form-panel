@@ -5,6 +5,7 @@ import React from 'react';
 
 import {
   CODE_EDITOR_CONFIG,
+  CUSTOM_BUTTON_DEFAULT,
   FORM_ELEMENT_DEFAULT,
   FORM_ELEMENT_OPTION_DEFAULT,
   FormElementType,
@@ -14,7 +15,7 @@ import {
   SELECT_DEFAULT,
   SLIDER_DEFAULT,
 } from '../../constants';
-import { CodeLanguage, LinkTarget } from '../../types';
+import { ButtonVariant, CodeLanguage, LinkTarget } from '../../types';
 import { getFormElementsEditorSelectors } from '../../utils';
 import { FormElementsEditor } from './FormElementsEditor';
 
@@ -262,6 +263,38 @@ describe('Form Elements Editor', () => {
       const elementSelectors = openElement(newElementId, newElementType);
 
       expect(elementSelectors.options()).toBeInTheDocument();
+    });
+
+    it('Should add Custom Button element', async () => {
+      const elements = [{ ...FORM_ELEMENT_DEFAULT, id: 'id' }];
+
+      render(getComponent({ value: elements, onChange }));
+
+      const newElementId = 'button';
+      const newElementType = FormElementType.CUSTOM_BUTTON;
+      /**
+       * Check if section is missing
+       */
+      expect(selectors.sectionLabel(true, newElementId, newElementType)).not.toBeInTheDocument();
+
+      /**
+       * Fill new element form
+       */
+      fireEvent.change(selectors.newElementId(), { target: { value: newElementId } });
+      fireEvent.change(selectors.newElementLabel(), { target: { value: 'New Custom Button' } });
+      fireEvent.change(selectors.newElementType(), { target: { value: newElementType } });
+
+      /**
+       * Create new element
+       */
+      fireEvent.click(selectors.buttonAddElement());
+
+      /**
+       * Check if new element exists
+       */
+      const elementSelectors = openElement(newElementId, newElementType);
+
+      expect(elementSelectors.fieldCustomButtonIcon()).toBeInTheDocument();
     });
 
     it('Should not add element if element with the same id and type exists', async () => {
@@ -1764,6 +1797,7 @@ describe('Form Elements Editor', () => {
        */
       const elementSelectors = openElement(element.id, element.type);
 
+      expect(elementSelectors.fieldDisableIf()).toBeInTheDocument();
       /**
        * Change textarea rows
        */
@@ -2781,6 +2815,201 @@ describe('Form Elements Editor', () => {
     });
   });
 
+  describe('Custom button', () => {
+    it('Should update icon for custom button', async () => {
+      const element = { ...CUSTOM_BUTTON_DEFAULT, id: 'button', uid: 'button-1', type: FormElementType.CUSTOM_BUTTON };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+      expect(elementSelectors.fieldCustomButtonIcon()).toBeInTheDocument();
+      expect(elementSelectors.fieldCustomButtonIcon()).toHaveValue('circle');
+
+      await act(() => fireEvent.change(elementSelectors.fieldCustomButtonIcon(), { target: { value: 'arrow-down' } }));
+
+      expect(elementSelectors.fieldCustomButtonIcon()).toHaveValue('arrow-down');
+    });
+
+    it('Should update button size', async () => {
+      const element = { ...CUSTOM_BUTTON_DEFAULT, id: 'button', uid: 'button-1', type: FormElementType.CUSTOM_BUTTON };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      /**
+       * Choose hidden option
+       */
+      const fieldVisibilitySelectors = getFormElementsEditorSelectors(within(elementSelectors.fieldCustomButtonSize()));
+      expect(fieldVisibilitySelectors.customButtonSizeOption(false, 'md')).toBeInTheDocument();
+
+      await act(() => fireEvent.click(fieldVisibilitySelectors.customButtonSizeOption(false, 'lg')));
+
+      expect(fieldVisibilitySelectors.customButtonSizeOption(false, 'lg')).toBeChecked();
+    });
+
+    it('Should update button text label', async () => {
+      const element = { ...CUSTOM_BUTTON_DEFAULT, id: 'button', uid: 'button-1', type: FormElementType.CUSTOM_BUTTON };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      expect(elementSelectors.fieldCustomButtonLabel()).toBeInTheDocument();
+      expect(elementSelectors.fieldCustomButtonLabel()).toHaveValue('Button');
+
+      await act(() => fireEvent.change(elementSelectors.fieldCustomButtonLabel(), { target: { value: 'Text' } }));
+
+      expect(elementSelectors.fieldCustomButtonLabel()).toHaveValue('Text');
+    });
+
+    it('Should update button place', async () => {
+      const element = { ...CUSTOM_BUTTON_DEFAULT, id: 'button', uid: 'button-1', type: FormElementType.CUSTOM_BUTTON };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      /**
+       * Choose hidden option
+       */
+      const fieldVisibilitySelectors = getFormElementsEditorSelectors(
+        within(elementSelectors.fieldCustomButtonPlace())
+      );
+      expect(fieldVisibilitySelectors.customButtonPlaceOption(false, 'form')).toBeInTheDocument();
+
+      await act(() => fireEvent.click(fieldVisibilitySelectors.customButtonPlaceOption(false, 'bottom')));
+
+      expect(fieldVisibilitySelectors.customButtonPlaceOption(false, 'bottom')).toBeChecked();
+    });
+
+    it('Should update button variant', async () => {
+      const element = { ...CUSTOM_BUTTON_DEFAULT, id: 'button', uid: 'button-1', type: FormElementType.CUSTOM_BUTTON };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      /**
+       * Choose hidden option
+       */
+      const fieldVisibilitySelectors = getFormElementsEditorSelectors(
+        within(elementSelectors.fieldCustomButtonVariant())
+      );
+      expect(fieldVisibilitySelectors.customButtonVariantOption(false, 'primary')).toBeInTheDocument();
+
+      await act(() => fireEvent.click(fieldVisibilitySelectors.customButtonVariantOption(false, 'secondary')));
+
+      expect(fieldVisibilitySelectors.customButtonVariantOption(false, 'secondary')).toBeChecked();
+    });
+
+    it('Should update button background for custom variant', async () => {
+      const element = {
+        ...CUSTOM_BUTTON_DEFAULT,
+        id: 'button',
+        uid: 'button-1',
+        variant: ButtonVariant.CUSTOM,
+        type: FormElementType.CUSTOM_BUTTON,
+        backgroundColor: '',
+      };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      expect(elementSelectors.fieldCustomButtonBackground()).toHaveValue('');
+      /**
+       * Change Color
+       */
+      await act(() =>
+        fireEvent.change(elementSelectors.fieldCustomButtonBackground(), { target: { value: '#c2c2c2' } })
+      );
+
+      expect(elementSelectors.fieldCustomButtonBackground()).toHaveValue('#c2c2c2');
+    });
+
+    it('Should update button Foreground for custom variant', async () => {
+      const element = {
+        ...CUSTOM_BUTTON_DEFAULT,
+        id: 'button',
+        uid: 'button-1',
+        variant: ButtonVariant.CUSTOM,
+        type: FormElementType.CUSTOM_BUTTON,
+        backgroundColor: '',
+      };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      expect(elementSelectors.fieldCustomButtonForeground()).toHaveValue('');
+      /**
+       * Change Color
+       */
+      await act(() =>
+        fireEvent.change(elementSelectors.fieldCustomButtonForeground(), { target: { value: '#c2c2c2' } })
+      );
+
+      expect(elementSelectors.fieldCustomButtonForeground()).toHaveValue('#c2c2c2');
+    });
+
+    it('Should update button custom code', async () => {
+      const element = {
+        ...CUSTOM_BUTTON_DEFAULT,
+        id: 'button',
+        uid: 'button-1',
+        variant: ButtonVariant.CUSTOM,
+        type: FormElementType.CUSTOM_BUTTON,
+        backgroundColor: '',
+      };
+      const elements = [element];
+
+      render(getComponent({ value: elements, onChange }));
+
+      /**
+       * Open id element
+       */
+      const elementSelectors = openElement(element.id, element.type);
+
+      expect(elementSelectors.fieldCustomButtonCustomCode()).toBeInTheDocument();
+      expect(elementSelectors.fieldCustomButtonCustomCode()).toHaveValue('');
+
+      /**
+       * Change textarea rows
+       */
+      await act(() => fireEvent.blur(elementSelectors.fieldCustomButtonCustomCode(), { target: { value: '123' } }));
+
+      expect(elementSelectors.fieldCustomButtonCustomCode()).toHaveValue('123');
+    });
+  });
   it('Should update local elements if prop elements is changed', async () => {
     const element = { ...FORM_ELEMENT_DEFAULT, id: 'string' };
     const elements = [element];
