@@ -465,4 +465,210 @@ describe('Migration', () => {
       });
     });
   });
+
+  /**
+   * Normalize Payload Options
+   */
+  describe('4.3.0', () => {
+    it('Should normalize payload if payload object with properties', () => {
+      expect(
+        getMigratedOptions({
+          pluginVersion: '4.0.0',
+          options: {
+            initial: {
+              payload: {
+                3: 's',
+                4: 't',
+                5: ' ',
+                6: 'p',
+                7: 'a',
+                8: 'y',
+                9: 'l',
+                10: 'o',
+                11: 'a',
+                12: 'd',
+                editorMode: 'code',
+                format: 'table',
+                rawQuery: true,
+                rawSql: 'delete from field_notes where id in (${payload});',
+                a: '',
+                refId: 'A',
+                sql: {
+                  columns: [
+                    {
+                      parameters: [],
+                      type: 'function',
+                    },
+                  ],
+                  groupBy: [
+                    {
+                      property: {
+                        type: 'string',
+                      },
+                      type: 'groupBy',
+                    },
+                  ],
+                  limit: 50,
+                },
+              },
+            },
+            update: {
+              payload: {
+                3: 's',
+                4: 't',
+                5: ' ',
+                6: 'p',
+                7: 'a',
+                8: 'y',
+                9: 'l',
+                10: 'o',
+                11: 'a',
+                12: 'd',
+                editorMode: 'code',
+                format: 'table',
+                rawQuery: true,
+                rawSql: 'delete from field_notes where id in (${payload});',
+                refId: 'A',
+                b: ' ',
+                sql: {
+                  columns: [
+                    {
+                      parameters: [],
+                      type: 'function',
+                    },
+                  ],
+                  groupBy: [
+                    {
+                      property: {
+                        type: 'string',
+                      },
+                      type: 'groupBy',
+                    },
+                  ],
+                  limit: 50,
+                },
+              },
+            },
+            resetAction: {
+              payload: {
+                3: 's',
+                4: 't',
+                5: ' ',
+                6: 'p',
+                7: 'a',
+                8: 'y',
+                9: 'l',
+                10: 'o',
+                11: 'a',
+                12: 'd',
+                editorMode: 'code',
+                format: 'table',
+                rawQuery: true,
+                rawSql: 'delete from field_notes where id in (${payload});',
+                refId: 'A',
+                sql: {
+                  columns: [
+                    {
+                      parameters: [],
+                      type: 'function',
+                    },
+                  ],
+                  groupBy: [
+                    {
+                      property: {
+                        type: 'string',
+                      },
+                      type: 'groupBy',
+                    },
+                  ],
+                  limit: 50,
+                },
+              },
+            },
+          },
+        } as any)
+      ).toEqual({
+        initial: {
+          payload: {
+            editorMode: 'code',
+            format: 'table',
+            rawQuery: true,
+            rawSql: 'delete from field_notes where id in (${payload});',
+            a: '',
+            refId: 'A',
+            sql: {
+              columns: [
+                {
+                  parameters: [],
+                  type: 'function',
+                },
+              ],
+              groupBy: [
+                {
+                  property: {
+                    type: 'string',
+                  },
+                  type: 'groupBy',
+                },
+              ],
+              limit: 50,
+            },
+          },
+        },
+        update: {
+          payload: {
+            editorMode: 'code',
+            format: 'table',
+            rawQuery: true,
+            rawSql: 'delete from field_notes where id in (${payload});',
+            refId: 'A',
+            b: ' ',
+            sql: {
+              columns: [
+                {
+                  parameters: [],
+                  type: 'function',
+                },
+              ],
+              groupBy: [
+                {
+                  property: {
+                    type: 'string',
+                  },
+                  type: 'groupBy',
+                },
+              ],
+              limit: 50,
+            },
+          },
+        },
+        resetAction: {
+          payload: {
+            editorMode: 'code',
+            format: 'table',
+            rawQuery: true,
+            rawSql: 'delete from field_notes where id in (${payload});',
+            refId: 'A',
+            sql: {
+              columns: [
+                {
+                  parameters: [],
+                  type: 'function',
+                },
+              ],
+              groupBy: [
+                {
+                  property: {
+                    type: 'string',
+                  },
+                  type: 'groupBy',
+                },
+              ],
+              limit: 50,
+            },
+          },
+        },
+      });
+    });
+  });
 });

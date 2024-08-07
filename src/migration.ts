@@ -126,6 +126,37 @@ const normalizeCodeOptions = (code: string): string => {
 };
 
 /**
+ * Normalize Payload Options
+ *
+ * @param obj
+ *
+ */
+export const normalizePayloadOptions = (obj: Record<string, unknown>) => {
+  /**
+   * Check passed object
+   */
+  if (!obj || typeof obj !== 'object') {
+    return obj;
+  }
+
+  const normalizedObj: Record<string, unknown> = {};
+
+  /**
+   * Check keys
+   */
+  for (const key in obj) {
+    const value = obj[key];
+    if (!isNaN(Number(key)) && typeof value === 'string' && value.toString().length === 1) {
+      continue;
+    } else {
+      normalizedObj[key] = value;
+    }
+  }
+
+  return normalizedObj;
+};
+
+/**
  * Get Migrated Options
  * @param panel
  */
@@ -200,6 +231,15 @@ export const getMigratedOptions = (panel: PanelModel<OutdatedPanelOptions>): Pan
         id: id ?? rest.name,
       })),
     } as LayoutOptions;
+  }
+
+  /**
+   * Normalize payload object
+   */
+  if (panel.pluginVersion && semver.lt(panel.pluginVersion, '4.3.0')) {
+    options.initial.payload = normalizePayloadOptions(options.initial.payload as Record<string, unknown>);
+    options.update.payload = normalizePayloadOptions(options.update.payload as Record<string, unknown>);
+    options.resetAction.payload = normalizePayloadOptions(options.resetAction.payload as Record<string, unknown>);
   }
 
   return options as PanelOptions;
