@@ -4,7 +4,7 @@
     "@emotion/css": "^11.11.2",
     "@grafana/data": "^11.1.0",
     "@grafana/runtime": "^11.1.0",
-    "@grafana/ui": "^11.1.0",
+    "@grafana/ui": "^11.2.0-186891",
     "@hello-pangea/dnd": "^16.6.0",
     "@volkovlabs/components": "^2.6.0",
     "react": "^18.3.1",

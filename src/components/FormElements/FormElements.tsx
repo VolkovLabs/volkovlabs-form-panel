@@ -49,6 +49,11 @@ interface Props {
    * Data
    */
   data: PanelData;
+
+  /**
+   * Time Zone
+   */
+  timeZone: string;
 }
 
 /**
@@ -62,6 +67,7 @@ export const FormElements: React.FC<Props> = ({
   initial,
   replaceVariables,
   data,
+  timeZone,
 }) => {
   /**
    * Theme and Styles
@@ -119,7 +125,15 @@ export const FormElements: React.FC<Props> = ({
         /**
          * Return
          */
-        return <FormElement key={index} element={element} onChange={onChangeElement} highlightClass={highlightClass} />;
+        return (
+          <FormElement
+            key={index}
+            element={element}
+            onChange={onChangeElement}
+            highlightClass={highlightClass}
+            timeZone={timeZone}
+          />
+        );
       })}
     </div>
   );

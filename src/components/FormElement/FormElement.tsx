@@ -1,5 +1,5 @@
 import { cx } from '@emotion/css';
-import { DateTime, dateTime } from '@grafana/data';
+import { DateTime, dateTime, dateTimeForTimeZone, getTimeZone } from '@grafana/data';
 import {
   Checkbox,
   DatePickerWithInput,
@@ -19,7 +19,7 @@ import {
 } from '@grafana/ui';
 import { AutosizeCodeEditor, NumberInput } from '@volkovlabs/components';
 import Slider from 'rc-slider';
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useCallback } from 'react';
 
 import { BOOLEAN_ELEMENT_OPTIONS, FormElementType, TEST_IDS } from '../../constants';
 import { CodeLanguage, LinkTarget, LocalFormElement } from '../../types';
@@ -46,17 +46,34 @@ interface Props {
    * Highlight Class
    */
   highlightClass: (element: LocalFormElement) => string;
+
+  /**
+   * Time Zone
+   *
+   * @type {string}
+   */
+  timeZone: string;
 }
 
 /**
  * Form Element
  */
-export const FormElement: React.FC<Props> = ({ element, onChange, highlightClass }) => {
+export const FormElement: React.FC<Props> = ({ element, onChange, highlightClass, timeZone }) => {
   /**
    * Styles and Theme
    */
   const theme = useTheme2();
   const styles = useStyles2(getStyles);
+
+  /**
+   * To Date Time With Time Zone
+   */
+  const toDateTimeWithTimeZone = useCallback(
+    (date?: string) => {
+      return dateTimeForTimeZone(getTimeZone({ timeZone }), date);
+    },
+    [timeZone]
+  );
 
   return (
     <InlineFieldRow
@@ -308,6 +325,7 @@ export const FormElement: React.FC<Props> = ({ element, onChange, highlightClass
                 }
               }}
               data-testid={TEST_IDS.formElements.fieldDateTime}
+              timeZone={timeZone}
             />
           )}
         </InlineField>
@@ -324,7 +342,9 @@ export const FormElement: React.FC<Props> = ({ element, onChange, highlightClass
         >
           <TimeOfDayPicker
             data-testid={TEST_IDS.formElements.fieldTime}
-            value={element.value ? dateTime(element.value) : dateTime(new Date().toISOString())}
+            value={
+              element.value ? toDateTimeWithTimeZone(element.value) : toDateTimeWithTimeZone(new Date().toISOString())
+            }
             onChange={(dateTime: DateTime) => {
               onChange<typeof element>({
                 ...element,

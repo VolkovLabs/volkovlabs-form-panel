@@ -59,6 +59,13 @@ interface Props {
    * On Change Section Expanded State
    */
   onChangeSectionExpandedState: (id: string, isExpanded: boolean) => void;
+
+  /**
+   * Time Zone
+   *
+   * @type {string}
+   */
+  timeZone: string;
 }
 
 /**
@@ -73,6 +80,7 @@ export const ElementSections: React.FC<Props> = ({
   data,
   sectionsExpandedState,
   onChangeSectionExpandedState,
+  timeZone,
 }) => {
   /**
    * Theme and Styles
@@ -128,6 +136,7 @@ export const ElementSections: React.FC<Props> = ({
                 section={section}
                 replaceVariables={replaceVariables}
                 data={data}
+                timeZone={timeZone}
               />
             )}
           </div>
